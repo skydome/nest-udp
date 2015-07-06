@@ -1,14 +1,15 @@
 all: clean build
 
 build: 
-	 ano build -m pro --cpu 16MHzatmega328
+	platformio run
+##	 ano build -m pro --cpu 16MHzatmega328
 
 upload:
-	ano upload -m pro --cpu 16MHzatmega328 -p /dev/ttyUSB$(tty)
+	platformio run -t upload --upload-port /dev/ttyUSB$(tty)
 
 clean:
-	ano clean
+	platformio run -t clean
 
 serial:
-	ano serial -p /dev/ttyUSB$(tty)
+	platformio serialports monitor -p  /dev/ttyUSB$(tty)
 

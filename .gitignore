@@ -22,3 +22,7 @@
 
 # ano builds
 .build_ano
+
+# platformio
+.pioenvs
+.sconsign.dblite
