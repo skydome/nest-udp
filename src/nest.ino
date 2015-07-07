@@ -21,67 +21,57 @@
 #include <avr/pgmspace.h>
 #include <UIPEthernet.h>
 
-
+#define ENC28J60DEBUG 1
 #define RF_SERVER_ADDRESS 0
 
 RF22ReliableDatagram manager(RF_SERVER_ADDRESS, 8, 0);
 
 EthernetUDP udp;
-unsigned long next;
 
 void setup() {
 
   Serial.begin(9600);
   if (manager.init()) {
-    Serial.println(F("init success"));
+    //Serial.println(F("init success"));
   }
   else {
-    Serial.println(F("init failed"));
+    /*Serial.println(F("init failed"));*/
   }
-
   uint8_t mac[6] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
 
   Ethernet.begin(mac);
-
-  next = millis() + 5000;
 }
 
+const char nestId[] PROGMEM = "nestId:";
+const uint8_t offset PROGMEM =48;
+const uint8_t skydome_port=5506;
+const char skydome[] PROGMEM = "api.skydome.io";
 void loop() {
-
-
   uint8_t data[2] PROGMEM;
   if (manager.available()) {
     uint8_t len = 2;
     uint8_t from;
 
     if (manager.recvfromAck(data, &len, &from)) {
-
-      Serial.print("got data[0]:");
-      Serial.println(data[0]);
-
-      Serial.print("got data[1]:");
-      Serial.println(data[1]);
-      char message[] PROGMEM = {from + 48,':', data[0] + 48,':', data[1] + 48,'\0'};
-
-      sendMessage("nestId:",message);
+      char message[] PROGMEM = {from + offset,':', data[0] + offset,':', data[1] + offset,'\0'};
+      sendMessage(nestId,message);
     }
   }
 }
 
 
-void sendMessage(char *nestId, char *message) {
-  int success = udp.beginPacket("api.skydome.io", 5506);
-  Serial.print("beginPacket: ");
-  Serial.println(success ? "success" : "failed");
+void sendMessage(const char *nestId, char *message) {
+  int success = udp.beginPacket(skydome, skydome_port);
+  /*Serial.print("beginPacket: ");
+  Serial.println(success ? "success" : "failed");*/
 
   success = udp.write(nestId);
   success = udp.write(message);
-  Serial.print("bytes written: ");
-  Serial.println(success);
+  /*Serial.print("bytes written: ");
+  Serial.println(success);*/
 
   success = udp.endPacket();
-  Serial.print("endPacket: ");
-  Serial.println(success ? "success" : "failed");
+  /*Serial.print("endPacket: ");
+  Serial.println(success ? "success" : "failed");*/
   udp.stop();
 }
-
