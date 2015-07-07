@@ -27,7 +27,6 @@
 RF22ReliableDatagram manager(RF_SERVER_ADDRESS, 8, 0);
 
 EthernetUDP udp;
-unsigned long next;
 
 void setup() {
 
@@ -42,8 +41,6 @@ void setup() {
   uint8_t mac[6] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
 
   Ethernet.begin(mac);
-
-  next = millis() + 5000;
 }
 
 void loop() {
@@ -56,32 +53,27 @@ void loop() {
 
     if (manager.recvfromAck(data, &len, &from)) {
 
-      Serial.print("got data[0]:");
-      Serial.println(data[0]);
+     char message[] PROGMEM = {from + 48,':', data[0] + 48,':', data[1] + 48,'\0'};
 
-      Serial.print("got data[1]:");
-      Serial.println(data[1]);
-      char message[] PROGMEM = {from + 48,':', data[0] + 48,':', data[1] + 48,'\0'};
-
-      sendMessage("nestId:",message);
+      sendMessage(message);
     }
   }
 }
 
 
-void sendMessage(char *nestId, char *message) {
+void sendMessage(char *message) {
   int success = udp.beginPacket("api.skydome.io", 5506);
-  Serial.print("beginPacket: ");
-  Serial.println(success ? "success" : "failed");
+  Serial.print(F("beginPacket: "));
+  Serial.println(success ? F("success") : F("failed"));
 
-  success = udp.write(nestId);
+  success = udp.write("NestId:");
   success = udp.write(message);
-  Serial.print("bytes written: ");
+  Serial.print(F("bytes written: "));
   Serial.println(success);
 
   success = udp.endPacket();
-  Serial.print("endPacket: ");
-  Serial.println(success ? "success" : "failed");
+  Serial.print(F("endPacket: "));
+  Serial.println(success ? F("success") : F("failed"));
   udp.stop();
 }
 
