@@ -21,7 +21,6 @@
 #include <avr/pgmspace.h>
 #include <UIPEthernet.h>
 
-#define ENC28J60DEBUG 1
 #define RF_SERVER_ADDRESS 0
 
 RF22ReliableDatagram manager(RF_SERVER_ADDRESS, 8, 0);
@@ -29,13 +28,12 @@ RF22ReliableDatagram manager(RF_SERVER_ADDRESS, 8, 0);
 EthernetUDP udp;
 
 void setup() {
-
   Serial.begin(9600);
   if (manager.init()) {
-    //Serial.println(F("init success"));
+      Serial.println(F("init success"));
   }
   else {
-    /*Serial.println(F("init failed"));*/
+      Serial.println(F("init failed"));
   }
   uint8_t mac[6] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
 
@@ -62,16 +60,19 @@ void loop() {
 
 void sendMessage(const char *nestId, char *message) {
   int success = udp.beginPacket(skydome, skydome_port);
-  /*Serial.print("beginPacket: ");
-  Serial.println(success ? "success" : "failed");*/
+
+  Serial.print(F("beginPacket: "));
+  Serial.println(success ? F("success") : F("failed"));
 
   success = udp.write(nestId);
   success = udp.write(message);
-  /*Serial.print("bytes written: ");
-  Serial.println(success);*/
+
+  Serial.print(F("bytes written: "));
+  Serial.println(success);
+
 
   success = udp.endPacket();
-  /*Serial.print("endPacket: ");
-  Serial.println(success ? "success" : "failed");*/
+  Serial.print(F("endPacket: "));
+  Serial.println(success ? F("success") : F("failed"));
   udp.stop();
 }
