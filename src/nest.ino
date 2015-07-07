@@ -40,10 +40,6 @@ void setup() {
   Ethernet.begin(mac);
 }
 
-const char nestId[] PROGMEM = "nestId:";
-const uint8_t offset PROGMEM =48;
-const uint8_t skydome_port=5506;
-const char skydome[] PROGMEM = "api.skydome.io";
 void loop() {
   uint8_t data[2] PROGMEM;
   if (manager.available()) {
@@ -51,20 +47,20 @@ void loop() {
     uint8_t from;
 
     if (manager.recvfromAck(data, &len, &from)) {
-      char message[] PROGMEM = {from + offset,':', data[0] + offset,':', data[1] + offset,'\0'};
-      sendMessage(nestId,message);
+     char message[] PROGMEM = {from + 48,':', data[0] + 48,':', data[1] + 48,'\0'};
+
+      sendMessage(message);
     }
   }
 }
 
 
-void sendMessage(const char *nestId, char *message) {
-  int success = udp.beginPacket(skydome, skydome_port);
-
+void sendMessage(char *message) {
+  int success = udp.beginPacket("api.skydome.io", 5506);
   Serial.print(F("beginPacket: "));
   Serial.println(success ? F("success") : F("failed"));
 
-  success = udp.write(nestId);
+  success = udp.write("NestId:");
   success = udp.write(message);
 
   Serial.print(F("bytes written: "));
