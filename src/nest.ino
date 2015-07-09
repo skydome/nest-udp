@@ -41,13 +41,20 @@ void setup() {
 }
 
 void loop() {
-  uint8_t data[2] PROGMEM;
+  uint8_t data[5] PROGMEM;
   if (manager.available()) {
-    uint8_t len = 2;
+    uint8_t len = 5;
     uint8_t from;
 
     if (manager.recvfromAck(data, &len, &from)) {
-     char message[] PROGMEM = {from + 48,':', data[0] + 48,':', data[1] + 48,'\0'};
+      char message[] PROGMEM = {
+		from + 48,':', 
+		data[0] + 48,':', 
+		data[1] + 48,':', 		
+		data[2] ,':', 		
+		data[3] ,':',
+	 	data[4] ,
+	'\0'};
 
       sendMessage(message);
     }
