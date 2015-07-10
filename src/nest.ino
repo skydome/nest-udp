@@ -50,7 +50,7 @@ void loop() {
       char message[] PROGMEM = {
 		from + 48,':', 
 		data[0] + 48,':', 
-		data[1] + 48,':', 		
+		data[1] ,':', 		
 		data[2] ,':', 		
 		data[3] ,':',
 	 	data[4] ,
