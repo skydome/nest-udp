@@ -30,13 +30,13 @@ EthernetUDP udp;
 void setup() {
   Serial.begin(9600);
   if (manager.init()) {
-      Serial.println(F("init success"));
+      Serial.println(F("RF init success"));
   }
   else {
-      Serial.println(F("init failed"));
+      Serial.println(F("RF init failed"));
   }
-  uint8_t mac[6] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
 
+  uint8_t mac[6] = {0x02, 0x05, 0x02, 0x04, 0x09, 0x05};
   Ethernet.begin(mac);
 }
 
@@ -47,28 +47,33 @@ void loop() {
     uint8_t from;
 
     if (manager.recvfromAck(data, &len, &from)) {
-      char message[] PROGMEM = {
-		from + 48,':', 
-		data[0] + 48,':', 
-		data[1] + 48,':', 		
-		data[2] ,':', 		
-		data[3] ,':',
-	 	data[4] ,
-	'\0'};
-
-      sendMessage(message);
+      	sendMessage(from,data);
     }
   }
 }
 
 
-void sendMessage(char *message) {
+void sendMessage(uint8_t from,uint8_t *message) {
   int success = udp.beginPacket("api.skydome.io", 5506);
   Serial.print(F("beginPacket: "));
+  Serial.println(message[0]);
+  Serial.println(message[1]);
+  Serial.println(message[2]);
+  Serial.println(message[3]);
+  Serial.println(message[4]);
   Serial.println(success ? F("success") : F("failed"));
 
-  success = udp.write("NestId:");
-  success = udp.write(message);
+  success = udp.write(0x01);
+  success = udp.write(0x02);
+  success = udp.write(0x06);
+  success = udp.write(0x02);
+  success = udp.write(0x04);
+  success = udp.write(0x05);
+  success = udp.write(message[0]);
+  success = udp.write(message[1]);
+  success = udp.write(message[2]);
+  success = udp.write(message[3]);
+  success = udp.write(message[4]);
 
   Serial.print(F("bytes written: "));
   Serial.println(success);

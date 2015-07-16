@@ -1,4 +1,4 @@
-all: build
+all: build upload serial
 
 init:
 	platformio init --board=pro16MHzatmega328
