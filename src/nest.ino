@@ -27,6 +27,8 @@ RF22ReliableDatagram manager(RF_SERVER_ADDRESS, 8, 0);
 
 EthernetUDP udp;
 
+uint8_t mac[6] = {0x02, 0x05, 0x02, 0x04, 0x09, 0x05};
+
 void setup() {
   Serial.begin(9600);
   if (manager.init()) {
@@ -36,7 +38,6 @@ void setup() {
       Serial.println(F("RF init failed"));
   }
 
-  uint8_t mac[6] = {0x02, 0x05, 0x02, 0x04, 0x09, 0x05};
   Ethernet.begin(mac);
 }
 
@@ -55,20 +56,14 @@ void loop() {
 
 void sendMessage(uint8_t from,uint8_t *message) {
   int success = udp.beginPacket("api.skydome.io", 5506);
-  Serial.print(F("beginPacket: "));
-  Serial.println(message[0]);
-  Serial.println(message[1]);
-  Serial.println(message[2]);
-  Serial.println(message[3]);
-  Serial.println(message[4]);
   Serial.println(success ? F("success") : F("failed"));
 
-  success = udp.write(0x01);
-  success = udp.write(0x02);
-  success = udp.write(0x06);
-  success = udp.write(0x02);
-  success = udp.write(0x04);
-  success = udp.write(0x05);
+  success = udp.write(mac[0]);
+  success = udp.write(mac[1]);
+  success = udp.write(mac[2]);
+  success = udp.write(mac[3]);
+  success = udp.write(mac[4]);
+  success = udp.write(mac[5]);
   success = udp.write(message[0]);
   success = udp.write(message[1]);
   success = udp.write(message[2]);
